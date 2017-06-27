@@ -1,4 +1,4 @@
-console.log(getEles('#content'))
+// console.log(getEles('#content'))
 // showStyles(0,function () {
 // 	markdownToHtml()
 // })

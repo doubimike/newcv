@@ -1,4 +1,5 @@
-var resumeMarkdown = `王敏 qianlongo
+(function (global) {
+	var resumeMarkdown = `王敏 qianlongo
 ----
 
 一只迷途的前端小码农，徜徉在计算机的世界，渴望成为一名有点点厉害的全栈开发工程师
@@ -33,12 +34,12 @@ var resumeWrap = $resumeWrap.get(0)
 var $resumetag = $('.resume-tag', resumeWrap)
 var $resumeMarkdown = $('.resume-markdown', resumeWrap)
 
-var re_currentMarkdown = '';
-var re_length = resumeMarkdown.length;
-var re_timer = null;
-var re_delay = 60;
-var re_start = 0;
-var re_iClass = 'htmlMode';
+var currentMarkdown = '';
+var length = resumeMarkdown.length;
+var timer = null;
+var delay = 60;
+var start = 0;
+var iClass = 'htmlMode';
 
 
 var markdownToHtml = function(callback) {
@@ -47,7 +48,7 @@ var markdownToHtml = function(callback) {
 		display: 'none'
 	})
 
-	$resumeWrap.addClass(re_iClass);
+	$resumeWrap.addClass(iClass);
 	$resumetag.html(marked(resumeMarkdown));
 
 	callback && callback();
@@ -56,16 +57,19 @@ var markdownToHtml = function(callback) {
 
 
 var showResume = function(callback) {
-	clearInterval(re_timer);
-	re_timer = setInterval(function() {
-		re_currentMarkdown += resumeMarkdown.substring(re_start, re_start + 1);
-		if (re_currentMarkdown.length === re_length) {
-			clearInterval(re_timer)
+	clearInterval(timer);
+	timer = setInterval(function() {
+		currentMarkdown += resumeMarkdown.substring(start, start + 1);
+		if (currentMarkdown.length === length) {
+			clearInterval(timer)
 			callback && callback()
 		} else {
-			$resumeMarkdown.html(re_currentMarkdown)
-			re_start++
+			$resumeMarkdown.html(currentMarkdown)
+			start++
 		}
-	},re_delay);
+	},delay);
 }
 
+
+global.showResume = showResume;	
+})(window);
