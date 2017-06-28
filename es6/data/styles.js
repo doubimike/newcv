@@ -95,4 +95,4 @@ html{
   ];
 
 
-  
+  export default styles;

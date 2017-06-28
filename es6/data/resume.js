@@ -24,3 +24,5 @@ var resumeMarkdown = `张航
 > oooo
 
 `;
+
+export default resumeMarkdown;
