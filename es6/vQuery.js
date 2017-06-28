@@ -2,12 +2,13 @@ let doc = document;
 let isUndefined = (obj) => {
 	return obj === void 0;
 }
+ 
 
 let getEles = (selector, context) => {
 	return (context || doc).querySelectorAll(selector);
 }
 
-class Vquery() {
+class Vquery {
 	constructor(selector, context) {
 		this.elements = getEles(selector, context);
 	}
