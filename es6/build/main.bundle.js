@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -68,8 +68,87 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+let doc = document;
+let isUndefined = obj => {
+	return obj === void 0;
+};
+
+let getEles = (selector, context) => {
+	return (context || doc).querySelectorAll(selector);
+};
+
+class Vquery {
+	constructor(selector, context) {
+		this.elements = getEles(selector, context);
+	}
+
+	get(index) {
+		return this.elements[index < 0 ? 0 : index];
+	}
+
+	// h必须带px单位，但是返回值不带单位
+	height(h) {
+		if (isUndefined(h)) {
+			return this.get(0).offsetHeight;
+		}
+		this.optimizedCb(ele => {
+			ele.style.height = h;
+		});
+	}
+	optimizedCb(callback) {
+
+		this.elements.forEach(callback);
+	}
+	css(styles) {
+		if (typeof styles === 'object') {
+			this.optimizedCb(ele => {
+				for (let key in styles) {
+					ele.style[key] = styles[key];
+				}
+			});
+		}
+	}
+	addClass(iClass) {
+		this.optimizedCb(ele => {
+			if (ele.className.split(' ').indexOf(iClass) === -1) {
+				ele.className += ' ' + iClass;
+			}
+		});
+	}
+
+	html(sHtml) {
+		if (isUndefined(sHtml)) {
+			return this.get(0).innerHTML;
+		}
+		this.optimizedCb(ele => {
+			ele.innerHTML = sHtml;
+		});
+
+		return this;
+	}
+
+	scrollTop(top) {
+		if (isUndefined(top)) {
+			return this.get(0).scrollTop;
+		}
+		this.optimizedCb(ele => {
+			ele.scrollTop = top;
+		});
+	}
+}
+
+/* harmony default export */ __webpack_exports__["a"] = ((selector, context) => {
+	return new Vquery(selector, context);
+});
+
+/***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__stylesEditor__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__stylesEditor__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__resumeEditor__ = __webpack_require__(4);
 // console.log(getEles('#content'))
 // showStyles(0,function () {
 // 	markdownToHtml()
@@ -87,29 +166,31 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
+
 let { showStyles } = __WEBPACK_IMPORTED_MODULE_0__stylesEditor__["a" /* default */];
+let { showResume, markdownToHtml } = __WEBPACK_IMPORTED_MODULE_1__resumeEditor__["a" /* default */];
 
 // showResume()
-// showStyles(0, () => {
-//   showResume(() => {
-//     showStyles(1, () => {
-//       markdownToHtml(() => {
-//         showStyles(2)
-//       })
-//     })
-//   })
-// })
-showStyles(0);
+showStyles(0, () => {
+  showResume(() => {
+    showStyles(1, () => {
+      markdownToHtml(() => {
+        showStyles(2);
+      });
+    });
+  });
+});
+// showStyles(0)
 // showStyles(2)
 // 回调太恶心，后面应该换成其他的形式完成
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__data_styles__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__vQuery__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__data_styles__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__vQuery__ = __webpack_require__(0);
 
 
 
@@ -174,7 +255,7 @@ const showStyles = (num, callback) => {
 });
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -273,82 +354,91 @@ html{
 /* harmony default export */ __webpack_exports__["a"] = (styles);
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-let doc = document;
-let isUndefined = obj => {
-	return obj === void 0;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__data_resume__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__vQuery__ = __webpack_require__(0);
+
+
+
+let $resumeWrap = __WEBPACK_IMPORTED_MODULE_1__vQuery__["a" /* default */]('#app .resume-wrap');
+let resumeWrap = $resumeWrap.get(0);
+let $resumetag = __WEBPACK_IMPORTED_MODULE_1__vQuery__["a" /* default */]('.resume-tag', resumeWrap);
+let $resumeMarkdown = __WEBPACK_IMPORTED_MODULE_1__vQuery__["a" /* default */]('.resume-markdown', resumeWrap);
+
+let currentMarkdown = '';
+let length = __WEBPACK_IMPORTED_MODULE_0__data_resume__["a" /* default */].length;
+let timer = null;
+let delay = 60;
+let start = 0;
+let iClass = 'htmlMode';
+
+let markdownToHtml = callback => {
+	console.log('markdownToHtml');
+	$resumeMarkdown.css({
+		display: 'none'
+	});
+
+	$resumeWrap.addClass(iClass);
+	$resumetag.html(marked(__WEBPACK_IMPORTED_MODULE_0__data_resume__["a" /* default */]));
+
+	callback && callback();
 };
 
-let getEles = (selector, context) => {
-	return (context || doc).querySelectorAll(selector);
+let showResume = callback => {
+	clearInterval(timer);
+	timer = setInterval(() => {
+		currentMarkdown += __WEBPACK_IMPORTED_MODULE_0__data_resume__["a" /* default */].substring(start, start + 1);
+		if (currentMarkdown.length === length) {
+			clearInterval(timer);
+			callback && callback();
+		} else {
+			$resumeMarkdown.html(currentMarkdown);
+			start++;
+		}
+	}, delay);
 };
 
-class Vquery {
-	constructor(selector, context) {
-		this.elements = getEles(selector, context);
-	}
-
-	get(index) {
-		return this.elements[index < 0 ? 0 : index];
-	}
-
-	// h必须带px单位，但是返回值不带单位
-	height(h) {
-		if (isUndefined(h)) {
-			return this.get(0).offsetHeight;
-		}
-		this.optimizedCb(ele => {
-			ele.style.height = h;
-		});
-	}
-	optimizedCb(callback) {
-
-		this.elements.forEach(callback);
-	}
-	css(styles) {
-		if (typeof styles === 'object') {
-			this.optimizedCb(ele => {
-				for (let key in styles) {
-					ele.style[key] = styles[key];
-				}
-			});
-		}
-	}
-	addClass(iClass) {
-		this.optimizedCb(ele => {
-			if (ele.className.split(' ').indexOf(iClass) === -1) {
-				ele.className += ' ' + iClass;
-			}
-		});
-	}
-
-	html(sHtml) {
-		if (isUndefined(sHtml)) {
-			return this.get(0).innerHTML;
-		}
-		this.optimizedCb(ele => {
-			ele.innerHTML = sHtml;
-		});
-
-		return this;
-	}
-
-	scrollTop(top) {
-		if (isUndefined(top)) {
-			return this.get(0).scrollTop;
-		}
-		this.optimizedCb(ele => {
-			ele.scrollTop = top;
-		});
-	}
-}
-
-/* harmony default export */ __webpack_exports__["a"] = ((selector, context) => {
-	return new Vquery(selector, context);
+/* harmony default export */ __webpack_exports__["a"] = ({
+	showResume,
+	markdownToHtml
 });
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var resumeMarkdown = `张航 
+----
+
+一个小前端
+
+技能
+----
+
+* 前端开发
+* node.js 开发
+
+工作经历
+----
+
+1. 艾拉捂脸
+2. 椰子金融前端开发工程师
+3. ...
+
+链接
+----
+
+* [GitHub](https://github.com/doubimike)
+
+> oooo
+
+`;
+
+/* harmony default export */ __webpack_exports__["a"] = (resumeMarkdown);
 
 /***/ })
 /******/ ]);
