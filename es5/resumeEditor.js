@@ -43,4 +43,5 @@ var showResume = function(callback) {
 
 global.showResume = showResume;	
 global.markdownToHtml = markdownToHtml;	
+
 })(window);

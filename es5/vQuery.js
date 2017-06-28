@@ -16,6 +16,7 @@
 	Vquery.prototype.get = function (index) {
 		return this.elements[index<0?0:index];
 	}
+	// h必须带px单位，但是返回值不带单位
 	Vquery.prototype.height = function (h) {
 		if(isUndefined(h)){
 			return this.get(0).offsetHeight;
@@ -40,7 +41,7 @@
 	Vquery.prototype.addClass = function (iClass) {
 		this.optimizedCb(function (ele) {
 				if(ele.className.split(' ').indexOf(iClass)===-1){
-					ele.className += iClass;
+					ele.className += ' '+iClass;
 				}
 			})
 	}
@@ -63,7 +64,9 @@
 			return this.get(0).scrollTop;
 		}
 		this.optimizedCb(function (ele) {
-			ele.srollTop = top;
+			console.log('set',top)
+			ele.scrollTop = top;
+			console.log('ele.scrollTop',ele.scrollTop)
 		})	
 	}
 

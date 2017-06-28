@@ -1,7 +1,4 @@
 (function(global) {
-  
-
-
   var $stylesWrap = $('#app .styles-wrap');
   console.log('$stylesWrap', $stylesWrap)
 
@@ -12,7 +9,6 @@
   var $stylePre = $('pre', stylesWrap)
   console.log('$stylePre', $stylePre)
 
-
   var currentStyle = ''
   var delay = 60
   var timer = null
@@ -20,23 +16,27 @@
   console.log('MAX_HEIGHT', MAX_HEIGHT)
 
   var goBottom = function(top) {
+    console.log('top', top)
     $stylesWrap.scrollTop(top);
   }
 
 
-
   function showStyles(num, callback) {
     var style = styles[num];
-    console.log('style', style)
     var length;
     var prevLength;
     if (!style) {
       return;
     }
 
+
+    // 0是reduce初始值
     length = styles.filter(function(item, i) {
+      console.log('i',i)
+      console.log('num',num)
       return i <= num;
     }).reduce(function(result, item) {
+
       result += item.length;
       return result;
     }, 0);
@@ -60,11 +60,12 @@
         callback && callback();
 
       } else {
-        console.log('$stylePre.height()', $stylePre.height())
-        console.log('MAX_HEIGHT', MAX_HEIGHT)
+        // console.log('$stylePre.height()', $stylePre.height())
+        // console.log('MAX_HEIGHT', MAX_HEIGHT)
         var top = $stylePre.height() - MAX_HEIGHT;
-        console.log('top', top)
+        
         if (top > 0) {
+          
           goBottom(top);
         }
         $style.html(currentStyle)
@@ -76,6 +77,5 @@
   }
 
   global.showStyles = showStyles;
-
 
 })(window);

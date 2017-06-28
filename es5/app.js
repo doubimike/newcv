@@ -3,5 +3,11 @@
 // 	markdownToHtml()
 // })
 showStyles(0,function () {
-	showResume(markdownToHtml)
+	showResume(function () {
+		showStyles(1,function () {
+			markdownToHtml(function () {
+				showStyles(2)
+			})
+		})
+	})
 })
